@@ -164,87 +164,87 @@ class DinoVoador(pygame.sprite.Sprite):
                 self.atual = 0
             self.atual += 0.25
             self.image = self.img_dinossauro[int(self.atual)]
+if __name__ == '__main__':
+    todas_sprites = pygame.sprite.Group()
 
-todas_sprites = pygame.sprite.Group()
+    dino = Dino()
 
-dino = Dino()
+    todas_sprites.add(dino)
 
-todas_sprites.add(dino)
+    for i in range(4):
+        nuvens = Nuvem()
+        todas_sprites.add(nuvens)
 
-for i in range(4):
-    nuvens = Nuvem()
-    todas_sprites.add(nuvens)
+    for i in range(LARGURA*2//64):#Lagura da tela (640px) dividido por cada frame do objeto chão (64px).Obs; Fiz uma gambiarra pra que o chão não quebrasse
+        chao = Chao(i)
+        todas_sprites.add(chao)
 
-for i in range(LARGURA*2//64):#Lagura da tela (640px) dividido por cada frame do objeto chão (64px).Obs; Fiz uma gambiarra pra que o chão não quebrasse
-    chao = Chao(i)
-    todas_sprites.add(chao)
+    cacto = Cacto()
 
-cacto = Cacto()
+    todas_sprites.add(cacto)
 
-todas_sprites.add(cacto)
+    grupo_obstaculos = pygame.sprite.Group()
 
-grupo_obstaculos = pygame.sprite.Group()
+    grupo_obstaculos.add(cacto)
 
-grupo_obstaculos.add(cacto)
+    dino_voador = DinoVoador()
 
-dino_voador = DinoVoador()
+    todas_sprites.add(dino_voador)
 
-todas_sprites.add(dino_voador)
-
-grupo_obstaculos.add(dino_voador)
+    grupo_obstaculos.add(dino_voador)
 
 
-relogio = pygame.time.Clock()
+    relogio = pygame.time.Clock()
 
-while True:
-    relogio.tick(20)
-    tela.fill(BRANCO)
-    for evento in pygame.event.get():
-        if evento.type == QUIT:
-            pygame.quit()
-            exit()
-        if evento.type == KEYDOWN:
-            if evento.key == K_SPACE and colidiu == False:
-                if dino.rect.y != dino.pos_inicial_y:
-                    pass
-                else:
-                    dino.pular()
-            if evento.key == K_r and colidiu == True:
-                reinicar_jogo()
-    colisoes = pygame.sprite.spritecollide(dino,grupo_obstaculos, False, pygame.sprite.collide_mask) #Lista que recebe os obstáculos que o dino colide
-    todas_sprites.draw(tela)#Desenha na tela todas as sprites.
+    while True:
+        relogio.tick(20)
+        tela.fill(BRANCO)
+        for evento in pygame.event.get():
+            if evento.type == QUIT:
+                pygame.quit()
+                exit()
+            if evento.type == KEYDOWN:
+                if evento.key == K_SPACE and colidiu == False:
+                    if dino.rect.y != dino.pos_inicial_y:
+                        pass
+                    else:
+                        dino.pular()
+                if evento.key == K_r and colidiu == True:
+                    reinicar_jogo()
+        colisoes = pygame.sprite.spritecollide(dino,grupo_obstaculos, False, pygame.sprite.collide_mask) #Lista que recebe os obstáculos que o dino colide
+        todas_sprites.draw(tela)#Desenha na tela todas as sprites.
 
-    if cacto.rect.topright[0] <= 0 or dino_voador.rect.topright[0] <= 0:
-        escolha_obstaculo = choice([0,1])
-        cacto.rect.x = LARGURA
-        dino_voador.rect.x = LARGURA
-        cacto.escolha = escolha_obstaculo
-        dino_voador.escolha = escolha_obstaculo
-    if colisoes and colidiu == False:
-        som_colisao.play()
-        colidiu = True
+        if cacto.rect.topright[0] <= 0 or dino_voador.rect.topright[0] <= 0:
+            escolha_obstaculo = choice([0,1])
+            cacto.rect.x = LARGURA
+            dino_voador.rect.x = LARGURA
+            cacto.escolha = escolha_obstaculo
+            dino_voador.escolha = escolha_obstaculo
+        if colisoes and colidiu == False:
+            som_colisao.play()
+            colidiu = True
 
-    if colidiu == True:
-        if pontos %100 == 0:
-            pontos+=1
+        if colidiu == True:
+            if pontos %100 == 0:
+                pontos+=1
 
-        game_over = exibe_mensagem('GAME OVER', 40, (0,0,0))
-        tela.blit(game_over, (LARGURA//2 -130, ALTURA//2 -70))
-        reiniciar = exibe_mensagem('Clique na tecla "R" para reiniciar', 22, (PRETO))
-        tela.blit(reiniciar, (LARGURA//2 - 200, ALTURA//2))
+            game_over = exibe_mensagem('GAME OVER', 40, (0,0,0))
+            tela.blit(game_over, (LARGURA//2 -130, ALTURA//2 -70))
+            reiniciar = exibe_mensagem('Clique na tecla "R" para reiniciar', 22, (PRETO))
+            tela.blit(reiniciar, (LARGURA//2 - 180, ALTURA//2))
 
-    else:
-        pontos+=1
-        todas_sprites.update()#Atualiza o movimento das sprites.
-        texto_pontos = exibe_mensagem(pontos, 30, (0,0,0))
-
-    if pontos %100 == 0:
-        som_pontuacao.play()
-        if velocidade_jogo >= 23:
-            velocidade_jogo +=0
         else:
-            velocidade_jogo+=1
+            pontos+=1
+            todas_sprites.update()#Atualiza o movimento das sprites.
+            texto_pontos = exibe_mensagem(pontos, 30, (0,0,0))
+
+        if pontos %100 == 0:
+            som_pontuacao.play()
+            if velocidade_jogo >= 23:
+                velocidade_jogo +=0
+            else:
+                velocidade_jogo+=1
 
 
-    tela.blit(texto_pontos, (520,30))
-    pygame.display.flip()
+        tela.blit(texto_pontos, (520,30))
+        pygame.display.flip()
